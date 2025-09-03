@@ -24,10 +24,6 @@ models:
 
 shim:
   listen-port: 443
-  upstream-port: 8087
+  upstream-port: 8080
+  tls-mode: self-signed
   publish-attestation: false
-  tls-challenge: dns
-  control-plane: https://api.tinfoil.sh
-  paths:
-    - /v1/chat/completions
-    - /metrics
