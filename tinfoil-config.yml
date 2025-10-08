@@ -9,18 +9,135 @@ models:
   - name: "llama3-3-70b-int4"
     repo: "lambdalabs/Llama-3.3-70B-Instruct-AWQ-4bit@a70257cf10f368114a66115c315def76a1227e26"
     mpk: "06002d4871dbd882fc8b4c385e5181fdd85615e514f4efca3b6b3a3a774a36d2_39785426944_58b5d994-b471-58c9-8058-d224be115e1a"
-  - name: "gpt-oss-120b"
-    repo: "openai/gpt-oss-120b@a9cc02bbe46b5935075a7cda03be5bb3192daf01"
-    mpk: "7614dc03b6dd12cae1ee66d8c89c559803bca7be1a60c6655dca8362b298782e_195764072448_fe214b91-d2bd-5100-b0a1-12c446810ab8"
   - name: "llama3-3-70b-fp8"
     repo: "RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic@984c96b73bcf6a675945bac6382b9ed551e5d42b"
     mpk: "0d0be05062e4d3fadc17176cffd1ef6b518a02b0410bd897723f423074ec6cb5_72687374336_99f5f660-3ee0-5626-9772-2f082314e763"
-  - name: "qwen3-coder-480b"
-    repo: "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8@003f183a92fbe5b9a8325aaa8b2ae797c91dd90f"
-    mpk: "81993809d5510f60b216a144a27d4a2ca1df6b5ddaa6b7f0096a040bb5b1bf07_482171310080_b7089f0d-7aa8-508f-a7f2-10d8bf7001c8"
-  - name: "deepseek-r1-0528"
-    repo: "deepseek-ai/DeepSeek-R1-0528@4236a6af538feda4548eca9ab308586007567f52"
-    mpk: "1cacd16f763afa07848c18e564b35699aef1530357873bd9ddd483626312b178_688604053504_16d2e2df-0159-5413-9396-337d023ceb3b"
+  - name: "llama4-scout-fp8"
+    repo: "RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic@98c5271e2d23f7f1fe1cc67858dc8428f5b59cf2"
+    mpk: "58a7409901493b9f49c003f9013d6a549a1f3c71c9e9bf836e3be90cf38688ed_114675494912_1e8bd52e-1473-5b85-9424-eff5c4780bb9"
+  - name: "llama-scout"
+    repo: "RedHatAI/Llama-4-Scout-17B-16E-Instruct@f619fb674aa868a9ae713b112601e9269ea908e8"
+    mpk: "f7cc2c98f077b22e73836d63eeef74e734114142ba8c480078229791cc2dc461_217315737600_358f7a5a-f506-5300-b735-a133c19a2fb6"
+  - name: "llama-maverick-fp8"
+    repo: "RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8@ad751fe44a9a92326ce966d980e325fbe2c832c3"
+    mpk: "0a717ba1d1462abc04d15a22cb903be30df2385de45640fa73edec7115a74567_416789741568_710a7d73-dd03-55ea-b9b3-510bfaec15ba"
+  - name: "llama-maevrick"
+    repo: "RedHatAI/Llama-4-Maverick-17B-128E-Instruct@ead348b0b31c5a923afa42ef3e35786884395402"
+    mpk: "203faad15ba5fbd8b216d93a425320150dee0e04b4d648589c27f620fa018556_803199680512_de9c7343-2085-59d4-b526-022470bae76a"
+
+containers:
+  - name: "llama3-3-70b-int4"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=0\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-06002d4871dbd882fc8b4c385e5181fdd85615e514f4efca3b6b3a3a774a36d2",
+      "--served-model-name", "llama3-3-70b-int4",
+      "--quantization", "awq_marlin",
+      "--max-model-len", "65536",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama3_json",
+      "--chat-template", "/etc/tinfoil/templates/tool_chat_template_llama3.1_json.jinja",
+      "--port", "8001"
+    ]
+  - name: "llama3-3-70b-fp8-tp4"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=4,5,6,7\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-0d0be05062e4d3fadc17176cffd1ef6b518a02b0410bd897723f423074ec6cb5",
+      "--tensor-parallel-size", "4",
+      "--served-model-name", "llama3-3-70b-fp8",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama3_json",
+      "--chat-template", "examples/tool_chat_template_llama3.2_json.jinja",
+      "--port", "8002"
+    ]
+  - name: "llama4-scout-fp8"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=1\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-58a7409901493b9f49c003f9013d6a549a1f3c71c9e9bf836e3be90cf38688ed",
+      "--served-model-name", "llama4-scout-fp8",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama4_pythonic",
+      "--chat-template", "examples/tool_chat_template_llama4_pythonic.jinja",
+      "--port", "8003"
+    ]
+  - name: "llama4-scout"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=2,3\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-f7cc2c98f077b22e73836d63eeef74e734114142ba8c480078229791cc2dc461",
+      "--tensor-parallel-size", "2",
+      "--served-model-name", "llama4-scout",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama4_pythonic",
+      "--chat-template", "examples/tool_chat_template_llama4_pythonic.jinja",
+      "--port", "8004"
+    ]
+  - name: "llama4-scout-tp4"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=0,1,2,3\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-f7cc2c98f077b22e73836d63eeef74e734114142ba8c480078229791cc2dc461",
+      "--tensor-parallel-size", "4",
+      "--served-model-name", "llama4-scout-tp4",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama4_pythonic",
+      "--chat-template", "examples/tool_chat_template_llama4_pythonic.jinja",
+      "--port", "8005"
+    ]
+  - name: "llama4-maverick-fp8"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=4,5,6,7\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-0a717ba1d1462abc04d15a22cb903be30df2385de45640fa73edec7115a74567",
+      "--tensor-parallel-size", "4",
+      "--served-model-name", "llama4-maverick-fp8",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama4_pythonic",
+      "--chat-template", "examples/tool_chat_template_llama4_pythonic.jinja",
+      "--port", "8006"
+    ]
+  - name: "llama4-maverick"
+    image: ""
+    args: [
+      "--runtime", "nvidia",
+      "--gpus", "'\"device=0,1,2,3,4,5,6,7\"'",
+      "--ipc", "host",
+      "vllm/vllm-openai:v0.10.2",
+      "--model", "/tinfoil/mpk/mpk-203faad15ba5fbd8b216d93a425320150dee0e04b4d648589c27f620fa018556",
+      "--tensor-parallel-size", "8",
+      "--served-model-name", "llama4-maverick",
+      "--enable-auto-tool-choice",
+      "--tool-call-parser", "llama4_pythonic",
+      "--chat-template", "examples/tool_chat_template_llama4_pythonic.jinja",
+      "--port", "8007"
+    ]
+  - name: "model-router"
+    image: ""
+    args: [
+      "ghcr.io/tinfoilsh/model-router:0.0.1",
+      "/app/bin","-m","llama3-3-70b-int4_8001,lla ma3-3-70b-fp8_8002,llama4-scout-fp8_8003,llama4-scout_8004,llama4-scout-tp4_8005,llama4-maverick-fp8_8006,llama4-maverick_8007"
+    ]
+
 
 shim:
   listen-port: 443
