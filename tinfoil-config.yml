@@ -25,6 +25,14 @@ models:
     repo: "RedHatAI/Llama-4-Maverick-17B-128E-Instruct@ead348b0b31c5a923afa42ef3e35786884395402"
     mpk: "203faad15ba5fbd8b216d93a425320150dee0e04b4d648589c27f620fa018556_803199680512_de9c7343-2085-59d4-b526-022470bae76a"
 
+containers:
+  - name: "model-router"
+    image: ""
+    args: [
+      "ghcr.io/tinfoilsh/model-router:0.0.1",
+      "/app/bin", "-m", "llama3-3-70b-int4_8001,llama4-scout-tp1_8002,llama4-scout-tp2_8003,llama3-3-70b-fp8_8004,llama4-scout-tp4_8005,llama4-scout-tp8_8006,llama4-maverick-fp8_8007,llama4-maverick_8008",
+    ]
+
 shim:
   listen-port: 443
   upstream-port: 8087
