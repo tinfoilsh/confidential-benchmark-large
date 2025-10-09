@@ -27,6 +27,9 @@ models:
 
 shim:
   listen-port: 443
-  upstream-port: 8080
-  tls-mode: self-signed
+  upstream-port: 8087
+  tls-challenge: dns
   publish-attestation: false
+  paths:
+    - /v1/chat/completions
+    - /metrics
